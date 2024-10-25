@@ -26,97 +26,56 @@ install_if_not_installed() {
     fi
 }
 
-# Function to install necessary packages
+# Install necessary packages
 install_packages() {
     echo -e "${BLUE}Updating package lists...${NC}"
     pkg update
+    for pkg in git nano clang cmake ninja rust make tur-repo python3.10 libjpeg-turbo libpng zlib; do
+        install_if_not_installed "$pkg"
+    done
+}
 
-    install_if_not_installed "git"
-    install_if_not_installed "nano"
-    install_if_not_installed "clang"
-    install_if_not_installed "cmake"
-    install_if_not_installed "ninja"
-    install_if_not_installed "rust"
-    install_if_not_installed "make"
-    install_if_not_installed "tur-repo"
-    install_if_not_installed "python3.10"
-    install_if_not_installed "libjpeg-turbo"
-    install_if_not_installed "libpng"
-    install_if_not_installed "zlib"
+# Function to set up and activate virtual environment
+setup_virtualenv() {
+    python3.10 -m venv venv
+    source venv/bin/activate
 }
 
 # Check if PocketFiBot directory exists
 if [ ! -d "PocketFiBot" ]; then
-    # If the directory does not exist, install packages and clone the repo
+    # Install packages and clone repo
     install_packages
-
-    # Upgrade pip and install wheel if necessary
     echo -e "${BLUE}Upgrading pip and installing wheel...${NC}"
     pip3.10 install --upgrade pip wheel --quiet
-
-    # Clone the PocketFiBot repository
     echo -e "${BLUE}Cloning PocketFiBot repository...${NC}"
     git clone https://github.com/rjfahad/PocketFiBot
 
-    # Change directory to PocketFiBot
-    echo -e "${BLUE}Navigating to PocketFiBot directory...${NC}"
+    # Navigate to PocketFiBot and set up
     cd PocketFiBot || exit
-
-    # Copy .env-example to .env
     echo -e "${BLUE}Copying .env-example to .env...${NC}"
     cp .env-example .env
-
-    # Open .env file for editing
     echo -e "${YELLOW}Opening .env file for editing...${NC}"
     nano .env
-
-    # Set up Python virtual environment
     echo -e "${BLUE}Setting up Python virtual environment...${NC}"
-    python3.10 -m venv venv
-
-    # Activate the virtual environment
-    echo -e "${BLUE}Activating Python virtual environment...${NC}"
-    source venv/bin/activate
-
-    # Install required Python packages
-    echo -e "${BLUE}Installing Python dependencies from requirements.txt...${NC}"
-    pip3.10 install -r requirements.txt --quiet
-
-    # Install the Pillow library
-    echo -e "${BLUE}Installing Pillow...${NC}"
-    pip3 install pillow --quiet
+    setup_virtualenv
+    echo -e "${BLUE}Installing Python dependencies...${NC}"
+    pip3.10 install -r requirements.txt pillow --quiet
 
     echo -e "${GREEN}Installation completed! You can now run the bot.${NC}"
-
 else
-    # If the directory exists, just navigate to it
-    echo -e "${GREEN}PocketFiBot is already installed. Navigating to the directory...${NC}"
     cd PocketFiBot || exit
-
-    # Activate the virtual environment
-    echo -e "${BLUE}Activating Python virtual environment...${NC}"
-    source venv/bin/activate
+    echo -e "${GREEN}PocketFiBot is already installed.${NC}"
 fi
 
-# Check if the virtual environment exists
+# Activate virtual environment if not already active
 if [ ! -f "venv/bin/activate" ]; then
-    # If the virtual environment does not exist, set it up
     echo -e "${BLUE}Setting up Python virtual environment...${NC}"
-    python3.10 -m venv venv
-
-    # Activate the virtual environment
-    echo -e "${BLUE}Activating Python virtual environment...${NC}"
-    source venv/bin/activate
-
-    # Install required Python packages
-    echo -e "${BLUE}Installing Python dependencies from requirements.txt...${NC}"
-    pip3.10 install -r requirements.txt
-
-    # Install the Pillow library
-    echo -e "${BLUE}Installing Pillow...${NC}"
-    pip3.10 install pillow --quiet
+    setup_virtualenv
+    echo -e "${BLUE}Installing Python dependencies...${NC}"
+    pip3.10 install -r requirements.txt pillow --quiet
 else
-    echo -e "${GREEN}Virtual environment already exists. Skipping dependency installation.${NC}"
+    echo -e "${GREEN}Virtual environment already exists. Activating...${NC}"
+    source venv/bin/activate
 fi
 
 # Run the bot
