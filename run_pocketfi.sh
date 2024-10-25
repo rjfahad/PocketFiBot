@@ -52,7 +52,7 @@ if [ ! -d "PocketFiBot" ]; then
 
     # Upgrade pip and install wheel if necessary
     echo -e "${BLUE}Upgrading pip and installing wheel...${NC}"
-    pip3 install --upgrade pip wheel --quiet
+    pip3.10 install --upgrade pip wheel --quiet
 
     # Clone the PocketFiBot repository
     echo -e "${BLUE}Cloning PocketFiBot repository...${NC}"
@@ -110,11 +110,11 @@ if [ ! -f "venv/bin/activate" ]; then
 
     # Install required Python packages
     echo -e "${BLUE}Installing Python dependencies from requirements.txt...${NC}"
-    pip3 install -r requirements.txt
+    pip3.10 install -r requirements.txt
 
     # Install the Pillow library
     echo -e "${BLUE}Installing Pillow...${NC}"
-    pip3 install pillow --quiet
+    pip3.10 install pillow --quiet
 else
     echo -e "${GREEN}Virtual environment already exists. Skipping dependency installation.${NC}"
 fi
